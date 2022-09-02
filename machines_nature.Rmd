@@ -1,0 +1,202 @@
+---
+title: "Quantitative Research on speeds of cars and animals"
+author: "Mardan Mirzaguliyev"
+date: "2022-08-30"
+output: html_document
+---
+
+# 1. INTRODUCTION AND DATA PREPARATION.
+
+This project was conducted as a quantitative research analysis using basic statistic concepts. The main idea behind the project was to analyze the speeds of 7 machine models (6 cars 1 motorcycle) and 7 animals from different perspective.   
+
+## 1.1. Necessary packages
+
+```{r}
+install.packages("tidyverse")
+```
+
+```{r}
+library(tidyverse)
+library(readr)
+library(dplyr)
+library(ggplot2)
+```
+
+## 1.2 Dataset
+ 
+```{r}
+df <- read_csv("machine_nature.csv") %>% as_tibble()
+df
+```
+
+```{r}
+glimpse(df)
+```
+This is quite small data set with 7 variables and 14 row. Variables are:
+* `name` - this includes both name of car brand and animal name,
+* `sex` - this variable is only for animals specifically for birds as the weight of male and female birds differ,
+* `top_speed_mph` - speed of a car and animal in mile per hour unit,
+* `top_speed_km_h` - speed of a car and animal in kilometer per hour unit,
+* `physical_category` - whether the object is car or animal,
+* `speed_locomotion_type` - what is the movement type that the objects achieve their highest,
+* `weight_kg` - weights of machine models and animals expressed in kilogram.
+
+# 2. DATA CLEANING
+
+`glimpse()` function identified that some variable types should have been changed. These variables are:
+* `sex` - should be converted to `factor`,
+* `physical_category` - should be converted to `factor`,
+* `speed_locomotion_type` - should be converted to `factor`.
+
+These conversions have been applied  to the variables in order to get valid results in the analyze phase.
+
+```{r}
+df$sex <- df$sex %>% as_factor()
+df$physical_category <- df$physical_category %>% as_factor()
+df$speed_locomotion_type <- df$speed_locomotion_type %>% as_factor()
+```
+
+Additionally, in some stages of analyses it would be necessary to have separate data frames for cars and animals. So, two subsets of the base data frame were created.
+
+```{r}
+df_machines <- df %>% dplyr::filter(df$physical_category=="Machine")
+df_machines
+```
+
+```{r}
+df_animals <- df %>% dplyr::filter(df$physical_category=="Nature")
+df_animals
+```
+
+After separate data frames were created individual calculations were applied to them first starting with `summary()` function. Initially, `sex` variable were dropped from the machines data frame.
+
+```{r}
+df_machines <- df_machines %>% select(-sex)
+df_machines
+```
+
+After creating subsets and applying necessary conversions results were checked via `glimpse()` function again.
+
+```{r}
+glimpse(df)
+```
+
+```{r}
+glimpse(df_machines)
+```
+
+```{r}
+glimpse(df_animals)
+```
+
+# 3. ANALYZE
+
+## 3.1 Basic descriptive statistics for cars and animals.
+
+```{r}
+max(df_machines$top_speed_km_h)
+min(df_machines$top_speed_km_h)
+mean(df_machines$top_speed_km_h)
+median(df_machines$top_speed_km_h)
+range(df_machines$top_speed_km_h)
+mode(df_machines$top_speed_km_h)
+```
+Functions revealed that there were no mode value in speed variable of machines.
+
+```{r}
+df_machines$top_speed_km_h %>% boxplot(xlab="Speed: minimum, median, IQR and maximum", horizontal=T)
+```
+
+```{r}
+df_machines$top_speed_km_h %>% hist(main="Histogram of speeds of machines", xlab="Speed range", ylab="Frequency")
+```
+
+```{r}
+max(df_animals$top_speed_km_h)
+min(df_animals$top_speed_km_h)
+mean(df_animals$top_speed_km_h)
+median(df_animals$top_speed_km_h)
+range(df_animals$top_speed_km_h)
+mode(df_animals$top_speed_km_h)
+```
+There were no mode value in speed variable of animals data frame either.
+
+```{r}
+df_animals$top_speed_km_h %>% boxplot(xlab="Speed: minimum, median, IQR and maximum", horizontal=T)
+```
+
+```{r}
+df_animals$top_speed_km_h %>% hist(main="Histogram of speeds of animals", xlab="Speed range", ylab="Frequency")
+```
+
+## 3.2 One numerical variable. t-test
+
+Do speeds of cars differ from the speeds of animals?
+
+Null hypothesis. The speeds of cars are the same as the speeds of animals.
+
+Alternative hypothesis. The speeds of cars differ from the speeds of animals.
+
+
+```{r}
+t.test(df_machines$top_speed_km_h, df_animals$top_speed_km_h)
+```
+
+## 3.3 The relationships between the speeds and weights. Correlation test. 
+
+Is there a relationships between speeds and weights of cars and animals?
+
+Alternative hypothesis. There is a relationship between speeds and weights of cars and animals.
+Null hypothesis. There is no relationship between speeds and weights of cars and animals.
+
+```{r}
+cor.test(df_machines$top_speed_km_h, df_machines$weight_kg)
+```
+
+```{r}
+ggplot(df_machines, 
+  aes(top_speed_km_h, weight_kg,
+    color = name)) +
+  geom_point(size = 3) + 
+  labs(
+  title="Weight v. Speed",
+  x="Speed",
+  y="Weight"
+)
+```
+
+```{r Animals}
+cor.test(df_animals$top_speed_km_h, df_animals$weight_kg)
+```
+
+```{r}
+ggplot(df_animals, 
+  aes(top_speed_km_h, weight_kg, color=name)) +
+  geom_point(size = 3) +
+  labs(
+    title="Weight v. Speed",
+    x="Speed",
+    y="Weight"
+)
+```
+
+# 4. CONCLUSION
+
+According to the statistics the average speeds of machines and animals are quite close even though maximum speed of car model (Bugatti Chiron Super Sport 300+ (2019) is much higher. And median speed of animals are higher than median speed of machines. Negative correlation between weights and speeds of animals and positive relationship between weights and speeds of machines are the other major findings of the analysis. One of the major limitation to the is the sample size and participation. There are no insect species in sample and movement categories are limited. Also, there is only one motorcycle model (Honda Ruckus) in the sapmle data.
+
+# REFERENCES.
+
+1. [What’s Faster, Nature or Machine?](https://telegra.ph/Whats-Faster-Nature-or-Machine-06-20) (Accessed: 31/08/2022)
+2. [Bugatti Chiron Super Sport 300+ (2019)](https://fastestlaps.com/models/bugatti-chiron-super-sport-300) (Accessed: 31/08/2022)
+3. [Porsche 911 Turbo S (2021)](https://www.motortrend.com/reviews/2021-porsche-911-turbo-s-lightweight-first-test-review/#:~:text=The%20standard%202021%20Porsche%20911,than%20the%20Lightweight%20we%20tested.) (Accessed: 31/08/2022)
+4. [Chevrolet Corvette Stingray (2020)](https://www.caranddriver.com/news/a29427267/2020-mid-engine-chevy-corvette-c8-weight/#:~:text=We%20recently%20got%20our%20hands,C7%20Corvette%20Stingray%20we%20weighed.) (Accessed: 31/08/2022)
+5. [Honda Civic (2021)](https://hondanews.com/en-US/honda-automobiles/releases/release-4f88c507e72a4e7630685979cb02598a-2021-civic-sedan-specifications-features) (Accessed: 31/08/2022)
+6. [Toyota RAV4 (2021)](https://www.edmunds.com/toyota/rav4/2021/features-specs/) (Accessed: 31/08/2022)
+
+7. [Ford F-150 Raptor (2020)](https://www.edmunds.com/ford/f-150/2020/st-401822610/features-specs/) (Accessed: 31/08/2022)
+8. [Honda Ruckus (2020)](https://hondanews.com/en-US/powersports/releases/release-47ef5ef525f391ae783334075a01b400-2020-honda-ruckus-specifications) (Accessed: 31/08/2022)
+9.[Pelegrine falcon](https://en.wikipedia.org/wiki/Peregrine_falcon) (Accessed: 31/08/2022)
+10. [Golden eagle](https://en.wikipedia.org/wiki/Golden_eagle) (Accessed: 31/08/2022)
+11. [Mexican_free-tailed_bat](https://en.wikipedia.org/wiki/Mexican_free-tailed_bat) (Accessed: 31/08/2022)
+12. [Cheetah](https://en.wikipedia.org/wiki/Cheetah) (Accessed: 31/08/2022)
+13. [Sailfish](https://en.wikipedia.org/wiki/Sailfish) (Accessed: 31/08/2022) 

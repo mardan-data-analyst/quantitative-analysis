@@ -1,0 +1,15 @@
+name,sex,top_speed_mph,top_speed_km_h,physical_category,speed_locomotion_type,weight_kg
+Bugatti Chiron Super Sport 300+ (2019),NA,304,489,Machine,moving,1978
+Peregrine Falcon,Male,242,389,Nature,flying,1
+Peregrine Falcon,Female,242,389,Nature,flying,1.5
+Porsche 911 Turbo S (2021),NA,205,330,Machine,moving,1646
+Golden Eagle,Male,200,322,Nature,flying,4.6
+Golden Eagle,Female,200,322,Nature,flying,6.7
+Chevrolet Corvette Stingray (2020),NA,194,312,Machine,moving,1654
+Honda Civic (2021),NA,137,220,Machine,moving,1309
+Toyota RAV4 (2021),NA,120,193,Machine,moving,1583
+Ford F-150 Raptor (2020),NA,107,172,Machine,moving,2584
+Mexican free-tailed bat,NA,101,163,Nature,running,0.013
+Cheetah,NA,75,121,Nature,running,72
+Sailfish,NA,68,109,Nature,swimming,90
+Honda Ruckus (2020),NA,40,64,Machine,moving,88
